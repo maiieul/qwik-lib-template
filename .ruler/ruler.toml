@@ -1,0 +1,29 @@
+# Ruler configuration — https://github.com/intellectronica/ruler
+# Source of truth for AI agent guidance lives in .ruler/; generated outputs
+# (root AGENTS.md, CLAUDE.md, .claude/, .codex/, .cursor/) are gitignored.
+
+# Default agents to enable when running `ruler apply`
+default_agents = ["claude", "codex", "cursor", "copilot"]
+
+# Keep repo guidance centralized in the root .ruler directory.
+nested = false
+
+[agents.claude]
+enabled = true
+output_path = "CLAUDE.md"
+
+[agents.codex]
+enabled = true
+output_path = "AGENTS.md"
+
+[agents.cursor]
+enabled = true
+
+[agents.copilot]
+enabled = true
+
+[skills]
+enabled = true
+
+[gitignore]
+enabled = true
