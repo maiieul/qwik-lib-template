@@ -22,6 +22,7 @@
     "@arethetypeswrong/cli": "0.18.3",
     "@qwik.dev/core": "catalog:",
     "@types/node": "catalog:",
+    "@varlock/bumpy": "1.13.2",
     "axe-core": "4.12.0",
     "oxlint-plugin-qwik": "0.0.8",
     "pkg-pr-new": "0.0.75",

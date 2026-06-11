@@ -42,6 +42,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 24.10.0
+      '@varlock/bumpy':
+        specifier: 1.13.2
+        version: 1.13.2
       axe-core:
         specifier: 4.12.0
         version: 4.12.0
@@ -1392,6 +1395,10 @@ packages:
 
   '@ungap/structured-clone@1.3.1':
     resolution: {integrity: sha512-mUFwbeTqrVgDQxFveS+df2yfap6iuP20NAKAsBt5jDEoOTDew+zwLAOilHCeQJOVSvmgCX4ogqIrA0mnyr08yQ==}
+
+  '@varlock/bumpy@1.13.2':
+    resolution: {integrity: sha512-GG8KggD37zlmGI8+5WUSElTqAYnE6wpencbScIIyScuhehHhyC/UP+KoxDpa9HZ55FHO5IVHXeedPEP1C4Iaog==}
+    hasBin: true
 
   '@voidzero-dev/vite-plus-core@0.1.24':
     resolution: {integrity: sha512-iXPGBABnQnrDMx89H6MOCGcTZp+QW+3rY4YMVKdE6ydchSvPk2O3MI2vgaRVfOtWJ2IjnxSnf1n2yjP67ZBRFQ==}
@@ -3657,6 +3664,8 @@ snapshots:
   '@types/unist@3.0.3': {}
 
   '@ungap/structured-clone@1.3.1': {}
+
+  '@varlock/bumpy@1.13.2': {}
 
   '@voidzero-dev/vite-plus-core@0.1.24(@arethetypeswrong/core@0.18.3)(@types/node@24.10.0)(esbuild@0.27.7)(less@4.6.4)(publint@0.3.21)(sass@1.100.0)(stylus@0.62.0)(typescript@5.9.3)(yaml@2.9.0)':
     dependencies:
