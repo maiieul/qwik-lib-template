@@ -1,0 +1,15 @@
+{
+  "[javascript][typescript][json][jsonc][javascriptreact][typescriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+
+  // Prevent conflicts with the Vite+ toolchain (oxlint/oxfmt).
+  "eslint.enable": false,
+  "prettier.enable": false,
+
+  "oxc.enable": true,
+  "oxc.lint.run": "onType"
+}

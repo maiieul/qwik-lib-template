@@ -1,28 +1,30 @@
 {
   "name": "qwik-lib-template",
   "version": "0.0.1",
-  "description": "Opinionated Qwik library template — a living reference maintained by the Qwik core team",
   "private": true,
+  "description": "Opinionated Qwik library template — a living reference maintained by the Qwik core team",
   "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter playground dev",
+    "build": "pnpm --filter './packages/*' build",
+    "check": "vp check . && pnpm -r run check",
+    "fix": "vp check --fix .",
+    "lint": "vp lint .",
+    "fmt": "vp fmt .",
+    "fmt.check": "vp fmt --check .",
+    "prepare": "vp config --hooks-only"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.3",
+    "@types/node": "catalog:",
+    "oxlint-plugin-qwik": "0.0.8",
+    "publint": "0.3.21",
+    "rolldown": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "0.1.24"
+  },
   "engines": {
     "node": ">=22.12"
   },
-  "packageManager": "pnpm@10.28.2",
-  "scripts": {
-    "dev": "pnpm --filter my-qwik-library-name dev",
-    "build": "pnpm --filter './packages/*' build",
-    "lint": "eslint \"packages/*/src/**/*.ts*\"",
-    "fmt": "prettier --write .",
-    "fmt.check": "prettier --check ."
-  },
-  "devDependencies": {
-    "@eslint/js": "9.39.1",
-    "@types/node": "catalog:",
-    "eslint": "10.0.3",
-    "eslint-plugin-qwik": "2.0.0-beta.37",
-    "globals": "17.0.0",
-    "prettier": "3.7.4",
-    "typescript": "catalog:",
-    "typescript-eslint": "8.56.1"
-  }
+  "packageManager": "pnpm@10.28.2"
 }

@@ -1,5 +1,14 @@
 packages:
   - packages/*
+  - playground
+
+# Vite Plus remaps the vite/vitest packages to its own implementations.
+# RULE: these two overrides and the root `vite-plus` devDependency are the
+# same version and must always be bumped together (exact pins — Vite+ is
+# alpha and bumps are deliberate, template-level decisions).
+overrides:
+  vite: npm:@voidzero-dev/vite-plus-core@0.1.24
+  vitest: npm:@voidzero-dev/vite-plus-test@0.1.24
 
 # Single source of truth for shared dependency versions.
 # Packages reference these with "catalog:".
@@ -7,8 +16,8 @@ catalog:
   "@qwik.dev/core": 2.0.0-beta.37
   "@qwik.dev/router": 2.0.0-beta.37
   "@types/node": 24.10.0
+  rolldown: 1.1.0
   typescript: 5.9.3
-  vite: 7.3.1
 
 # Supply-chain hardening: no install scripts unless allowlisted,
 # and a cooldown before newly published versions are installable.

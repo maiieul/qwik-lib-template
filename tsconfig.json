@@ -1,19 +1,18 @@
 {
   "compilerOptions": {
-    "allowJs": true,
     "target": "es2020",
     "module": "esnext",
     "lib": ["es2020", "DOM"],
     "jsx": "react-jsx",
     "jsxImportSource": "@qwik.dev/core",
     "strict": true,
-    "declaration": true,
     "resolveJsonModule": true,
     "moduleResolution": "Bundler",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "incremental": true,
     "isolatedModules": true,
-    "types": ["vite/client"]
-  }
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  },
+  "include": ["vite.config.ts", "tools"]
 }
