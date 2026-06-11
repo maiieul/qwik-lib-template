@@ -1,0 +1,26 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:best-practices"],
+  "minimumReleaseAge": "3 days",
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "non-major dependencies"
+    },
+    {
+      "description": "Vite+ bumps are deliberate template-level decisions: the vite-plus devDependency and the two pnpm-workspace overrides must move together.",
+      "matchPackageNames": [
+        "vite-plus",
+        "@voidzero-dev/vite-plus-core",
+        "@voidzero-dev/vite-plus-test"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "oxfmt/oxlint formatting churn is pre-1.0; bump deliberately, in their own PR, alongside a repo-wide reformat.",
+      "matchPackageNames": ["oxlint-plugin-qwik"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "lint tooling"
+    }
+  ]
+}

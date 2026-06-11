@@ -1,0 +1,19 @@
+name: Setup
+description: pnpm + Node + frozen install (run actions/checkout first)
+
+# Notes for template adopters:
+# - pnpm/action-setup gets NO version input on purpose — it reads the
+#   `packageManager` field from package.json (setting both is an error).
+# - No corepack anywhere: it is no longer distributed with Node.js 25+.
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v6
+
+    - uses: actions/setup-node@v6
+      with:
+        node-version: 24
+        cache: pnpm
+
+    - run: pnpm install --frozen-lockfile
+      shell: bash
