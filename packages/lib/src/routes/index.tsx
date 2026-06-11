@@ -1,6 +1,6 @@
 import { component$ } from "@qwik.dev/core";
-import { Logo } from "../components/logo/logo";
-import { Counter } from "../components/counter/counter";
+import { Logo } from "../logo/logo";
+import { Counter } from "../counter/counter";
 
 export default component$(() => {
   return (

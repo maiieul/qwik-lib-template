@@ -18,7 +18,8 @@ const ignores = [
   "**/bazel-testlogs",
   "**/dist",
   "**/dist-dev",
-  "**/lib",
+  // build output only — the package directory itself is also named "lib"
+  "packages/*/lib",
   "**/lib-types",
   "**/etc",
   "**/external",

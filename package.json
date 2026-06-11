@@ -1,53 +1,28 @@
 {
-  "name": "my-qwik-library-name",
+  "name": "qwik-lib-template",
   "version": "0.0.1",
-  "description": "Create a Qwik library",
-  "main": "./lib/index.qwik.mjs",
-  "qwik": "./lib/index.qwik.mjs",
-  "types": "./lib/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./lib/index.d.ts",
-      "import": "./lib/index.qwik.mjs",
-      "require": "./lib/index.qwik.cjs"
-    }
-  },
-  "files": [
-    "lib"
-  ],
-  "engines": {
-    "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
-  },
-  "private": false,
-  "sideEffects": false,
+  "description": "Opinionated Qwik library template — a living reference maintained by the Qwik core team",
+  "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "packageManager": "pnpm@10.28.2",
   "scripts": {
-    "build": "qwik build",
-    "build.lib": "vite build --mode lib",
-    "build.types": "tsc -p tsconfig.types.json --emitDeclarationOnly --incremental false",
-    "dev": "vite --mode ssr",
-    "dev.debug": "node --inspect-brk ./node_modules/vite/bin/vite.js --mode ssr --force",
+    "dev": "pnpm --filter my-qwik-library-name dev",
+    "build": "pnpm --filter './packages/*' build",
+    "lint": "eslint \"packages/*/src/**/*.ts*\"",
     "fmt": "prettier --write .",
-    "fmt.check": "prettier --check .",
-    "lint": "eslint \"src/**/*.ts*\"",
-    "release": "np",
-    "start": "vite --open --mode ssr",
-    "test": "echo \"No test specified\" && exit 0",
-    "qwik": "qwik"
+    "fmt.check": "prettier --check ."
   },
   "devDependencies": {
-    "@eslint/js": "latest",
-    "@qwik.dev/core": "2.0.0-beta.37",
-    "@qwik.dev/router": "latest",
-    "@types/node": "24.10.0",
+    "@eslint/js": "9.39.1",
+    "@types/node": "catalog:",
     "eslint": "10.0.3",
     "eslint-plugin-qwik": "2.0.0-beta.37",
     "globals": "17.0.0",
-    "np": "^8.0.4",
     "prettier": "3.7.4",
-    "typescript": "5.9.3",
-    "typescript-eslint": "8.56.1",
-    "vite": "7.3.1",
-    "vite-tsconfig-paths": "^4.2.1"
+    "typescript": "catalog:",
+    "typescript-eslint": "8.56.1"
   }
 }

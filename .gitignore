@@ -1,8 +1,8 @@
 # Build
-/dist
-/lib
-/lib-types
-/server
+dist/
+lib/
+lib-types/
+server/
 
 # Development
 node_modules
@@ -36,3 +36,6 @@ lerna-debug.log*
 # Yarn
 .yarn/*
 !.yarn/releases
+
+# AI working artifacts
+.planning/

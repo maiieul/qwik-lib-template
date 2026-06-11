@@ -1,0 +1,18 @@
+packages:
+  - packages/*
+
+# Single source of truth for shared dependency versions.
+# Packages reference these with "catalog:".
+catalog:
+  "@qwik.dev/core": 2.0.0-beta.37
+  "@qwik.dev/router": 2.0.0-beta.37
+  "@types/node": 24.10.0
+  typescript: 5.9.3
+  vite: 7.3.1
+
+# Supply-chain hardening: no install scripts unless allowlisted,
+# and a cooldown before newly published versions are installable.
+onlyBuiltDependencies: []
+minimumReleaseAge: 4320 # minutes (3 days)
+minimumReleaseAgeExclude:
+  - "@qwik.dev/*"
