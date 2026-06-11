@@ -6,6 +6,9 @@ packages:
 # RULE: these two overrides and the root `vite-plus` devDependency are the
 # same version and must always be bumped together (exact pins — Vite+ is
 # alpha and bumps are deliberate, template-level decisions).
+# The root `vitest: "*"` devDependency is intentional: the override decides
+# the real version, but the entry must exist so pnpm links vitest next to
+# packages that peer-depend on it (vitest-browser-qwik's types need it).
 overrides:
   vite: npm:@voidzero-dev/vite-plus-core@0.1.24
   vitest: npm:@voidzero-dev/vite-plus-test@0.1.24
@@ -18,6 +21,14 @@ catalog:
   "@types/node": 24.10.0
   rolldown: 1.1.0
   typescript: 5.9.3
+  vitest-browser-qwik: 0.3.8
+
+# vitest-browser-qwik declares a `vitest` peer; the override above aliases
+# vitest to @voidzero-dev/vite-plus-test (0.1.x), which can never satisfy a
+# ^4.x range even though it bundles vitest 4. Silence that one warning.
+peerDependencyRules:
+  allowedVersions:
+    "vitest-browser-qwik>vitest": "*"
 
 # Supply-chain hardening: no install scripts unless allowlisted,
 # and a cooldown before newly published versions are installable.

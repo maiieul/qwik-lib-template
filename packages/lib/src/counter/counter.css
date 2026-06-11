@@ -1,0 +1,11 @@
+.counter {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.counter button {
+  cursor: pointer;
+  padding: 0.25rem 0.75rem;
+}
