@@ -1,14 +1,6 @@
 import { readFileSync } from "node:fs";
 import type { Plugin } from "rolldown";
 
-/**
- * Rolldown plugin replicating Vite's `import styles from "./x.css?inline"`
- * semantics: the CSS file content is returned as a JS string module.
- *
- * Needed because `vp pack` builds with Rolldown directly, which does not
- * implement Vite's `?inline` import query. The dev harness and vitest run
- * through Vite itself, where `?inline` works natively.
- */
 export function inlineCss(): Plugin {
   return {
     name: "inline-css",

@@ -2,19 +2,13 @@ packages:
   - packages/*
   - playground
 
-# Vite Plus remaps the vite/vitest packages to its own implementations.
-# RULE: these two overrides and the root `vite-plus` devDependency are the
-# same version and must always be bumped together (exact pins — Vite+ is
-# alpha and bumps are deliberate, template-level decisions).
-# The root `vitest: "*"` devDependency is intentional: the override decides
-# the real version, but the entry must exist so pnpm links vitest next to
-# packages that peer-depend on it (vitest-browser-qwik's types need it).
+# These overrides and the root vite-plus devDependency move together, same version.
+# Root `vitest: "*"` must stay declared so pnpm links peer types.
 overrides:
   vite: npm:@voidzero-dev/vite-plus-core@0.1.24
   vitest: npm:@voidzero-dev/vite-plus-test@0.1.24
 
 # Single source of truth for shared dependency versions.
-# Packages reference these with "catalog:".
 catalog:
   "@qwik.dev/core": 2.0.0-beta.37
   "@qwik.dev/router": 2.0.0-beta.37
@@ -23,15 +17,12 @@ catalog:
   typescript: 5.9.3
   vitest-browser-qwik: 0.3.8
 
-# vitest-browser-qwik declares a `vitest` peer; the override above aliases
-# vitest to @voidzero-dev/vite-plus-test (0.1.x), which can never satisfy a
-# ^4.x range even though it bundles vitest 4. Silence that one warning.
+# Silences a peer warning the vitest override can never satisfy.
 peerDependencyRules:
   allowedVersions:
     "vitest-browser-qwik>vitest": "*"
 
-# Supply-chain hardening: no install scripts unless allowlisted,
-# and a cooldown before newly published versions are installable.
+# minimumReleaseAge is a supply-chain cooldown before new versions install.
 onlyBuiltDependencies: []
 minimumReleaseAge: 4320 # minutes (3 days)
 minimumReleaseAgeExclude:

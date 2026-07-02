@@ -2,9 +2,7 @@ import { component$, useSignal, useStyles$ } from "@qwik.dev/core";
 import styles from "./counter.css?inline";
 
 export const Counter = component$(() => {
-  // ?inline + useStyles$ is the canonical CSS pattern for Qwik libraries:
-  // the CSS ships inside the JS module (lazy-loaded and deduped by Qwik),
-  // which keeps `sideEffects: false` truthful.
+  // ?inline + useStyles$ keeps sideEffects:false truthful
   useStyles$(styles);
   const count = useSignal(0);
 

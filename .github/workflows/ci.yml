@@ -3,8 +3,7 @@ name: CI
 permissions:
   contents: read
 
-# pull_request + push:main only — a bare [push, pull_request] double-runs
-# every PR commit.
+# Avoids double-running every PR commit (push + pull_request together).
 on:
   pull_request:
   push:
@@ -15,9 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # vp check = format + lint (type-aware, includes full TS typecheck) in one
-  # pass, so there is no separate typecheck job. sherif lints the monorepo
-  # itself (dependency consistency across packages).
+  # vp check includes typecheck, so no separate tsc job exists.
   check:
     runs-on: ubuntu-latest
     steps:
@@ -54,17 +51,9 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install chromium --with-deps
 
-      # Vitest Browser Mode runs headless automatically in CI.
       - run: pnpm test.browser
-      # Growth path: when the suite gets slow, shard this job instead —
-      #   strategy:
-      #     matrix:
-      #       shard: [1, 2, 3, 4]
-      # and run: pnpm test.browser -- --shard=${{ matrix.shard }}/4
+      # Shard here if the suite gets slow: matrix shard: [1,2,3,4], --shard=${{ matrix.shard }}/4
 
-  # Build the publishable packages, then validate what would be published:
-  # publint checks package.json/exports structure, attw checks how the types
-  # resolve for consumers (esm-only profile — this template ships no CJS).
   build:
     runs-on: ubuntu-latest
     steps:
@@ -74,9 +63,7 @@ jobs:
       - run: pnpm exec publint packages/lib
       - run: pnpm exec attw --pack packages/lib --profile esm-only
 
-  # Optional Windows lane: uncomment to also verify the library build on
-  # Windows. Keep `check` ubuntu-only — custom oxlint JS plugins (the Qwik
-  # rules) have a known Windows OOM issue until oxc's allocator work lands.
+  # Optional Windows lane: keep `check` ubuntu-only, oxlint JS plugins OOM on Windows.
   # build-windows:
   #   runs-on: windows-latest
   #   steps:

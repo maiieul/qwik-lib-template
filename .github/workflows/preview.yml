@@ -12,17 +12,7 @@ concurrency:
   group: preview-${{ github.ref }}
   cancel-in-progress: true
 
-# Publishes every package to pkg.pr.new on each PR/push so changes are
-# installable immediately (no npm release needed):
-#   pnpm add https://pkg.pr.new/<org>/<repo>/<package>@<ref>
-#
-# Setup (one-time, documented in the README):
-# - install the pkg.pr.new GitHub App on the repo/org
-# - compact URLs activate once the package exists on npm with a matching
-#   `repository` field
-#
-# pkg-pr-new is a pinned devDependency on purpose — its own README forbids
-# dlx/npx here — and must run exactly ONCE per workflow run (one comment).
+# pkg-pr-new must run exactly once per workflow run, never via dlx/npx.
 jobs:
   preview:
     runs-on: ubuntu-latest

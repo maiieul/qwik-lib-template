@@ -12,9 +12,7 @@ test("renders and increments (CSR)", async () => {
 });
 
 test("server-side renders real HTML", async () => {
-  // renderSSR executes the component in a Node.js context (true SSR) and
-  // hands the resulting HTML to the browser — it verifies server output
-  // (catches SSR-only breakage). Interactivity is covered by the CSR test.
+  // renderSSR verifies server output only, CSR test covers interactivity
   const screen = await renderSSR(<Counter />);
 
   await expect.element(screen.getByText("Count: 0")).toBeVisible();

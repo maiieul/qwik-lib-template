@@ -13,31 +13,15 @@ type PackageManifest = {
 
 const escapeForRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-/** Matches a package name and any of its subpath imports. */
 const dependencyPattern = (name: string) => new RegExp(`^${escapeForRegex(name)}(/.*)?$`);
 
-/**
- * Forces the output layout the Qwik optimizer expects from a library:
- *
- * - every emitted file keeps the `.qwik.mjs` suffix — the consuming app's
- *   qwikVite plugin only re-runs the optimizer over imported files matching
- *   /\.qwik\.[mc]?js$/ (TRANSFORM_REGEX), so a file without the suffix is
- *   invisible to it and its QRLs never get extracted;
- * - `preserveModules` keeps one output module per source module, preserving
- *   per-component lazy-loading granularity and tree-shaking for consumers.
- */
+/** .qwik.mjs suffix required by consumer optimizer's TRANSFORM_REGEX; preserveModules keeps per-component lazy loading. */
 const qwikOutputPlugin = (srcDir: string, outDir: string): Plugin => ({
   name: "qwik-lib-output-options",
   outputOptions(outputOptions) {
     return Object.assign(outputOptions, {
       dir: outDir,
-      // Filenames are derived from the source path instead of the default
-      // [name] placeholder: rolldown strips ALL extensions when naming
-      // preserved modules, so `counter.css?inline` and `counter.tsx` would
-      // collide and get nondeterministic `counter`/`counter2` names.
-      // Keeping the `.css` in the name matches Vite lib-mode output.
-      // Declaration chunks (name ends in ".d") keep standard .d.mts naming
-      // so `types` conditions resolve under node16 module resolution.
+      // rolldown strips all extensions when naming preserved modules, colliding counter.css vs counter.tsx.
       entryFileNames: (chunk: { name?: string; facadeModuleId?: string | null }) => {
         const isDts = chunk.name?.endsWith(".d");
         const id = chunk.facadeModuleId?.split("?")[0];
@@ -49,7 +33,7 @@ const qwikOutputPlugin = (srcDir: string, outDir: string): Plugin => ({
           return isDts ? "[name].mts" : "[name].qwik.mjs";
         }
         const base = rel.replace(/\.(tsx|ts|jsx|js|mjs)$/, "");
-        // dts chunks resolve from a synthetic "<file>.d.ts" facade id.
+        // dts chunks keep .d.mts naming for node16 module resolution.
         return isDts ? `${base.replace(/\.d$/, "")}.d.mts` : `${base}.qwik.mjs`;
       },
       chunkFileNames: "[name]-[hash].qwik.mjs",
@@ -59,21 +43,8 @@ const qwikOutputPlugin = (srcDir: string, outDir: string): Plugin => ({
   },
 });
 
-/**
- * `vp pack` build config for one Qwik library package.
- *
- * Usage in the root vite.config.ts: `pack: [qwikLibPack("packages/lib")]`.
- *
- * The package's `dependencies` and `peerDependencies` are externalized
- * (never bundled); anything else imported from src is bundled in.
- * Declarations are emitted by tsdown's dts support as per-module .d.mts
- * (resolvable under node16 module resolution — verified with attw).
- * The `qwik` field + `.qwik.mjs` naming contract is what makes the
- * published output optimizable in consuming apps.
- */
 export function qwikLibPack(packageDir: string): PackUserConfig {
   const cwd = resolve(import.meta.dirname, "..", packageDir);
-  // Reading our own workspace package.json — shape is under our control.
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   const manifest = JSON.parse(
     readFileSync(resolve(cwd, "package.json"), "utf-8"),
@@ -100,8 +71,6 @@ export function qwikLibPack(packageDir: string): PackUserConfig {
       neverBundle: external,
       onlyBundle: false,
     },
-    // qwikRollup is untyped (returns `any`) but runs fine as a Rolldown
-    // plugin — proven by qds.dev in production.
     plugins: [
       qwikRollup({
         target: "lib",

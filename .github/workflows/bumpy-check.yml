@@ -1,12 +1,6 @@
 name: Bumpy check
 
-# Posts/updates a PR comment with the release plan and warns when changed
-# packages have no bump file. Create bump files with `pnpm exec bumpy add`.
-#
-# SECURITY: pull_request_target runs with elevated permissions even for fork
-# PRs. This workflow checks out PR files only to READ .bumpy/ bump files —
-# it must never install dependencies or execute PR code. bumpy itself runs
-# via pnpm dlx at the version pinned on the BASE branch, not the PR's.
+# SECURITY: pull_request_target job must never run PR code.
 on:
   pull_request_target:
 
@@ -24,6 +18,7 @@ jobs:
 
       - uses: pnpm/action-setup@v6
 
+      # bumpy version resolved from base branch, not PR.
       - name: Resolve bumpy version from base branch
         run: |
           git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1

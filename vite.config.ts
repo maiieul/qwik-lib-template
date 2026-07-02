@@ -4,9 +4,6 @@ import { playwright } from "vite-plus/test/browser-playwright";
 import { testSSR } from "vitest-browser-qwik/ssr-plugin";
 import { qwikLibPack } from "./tools/qwik-pack.ts";
 
-// Everything the toolchain does is configured here: library builds (pack),
-// linting, formatting, tests (vitest projects) and pre-commit staged
-// checks — one config, one tool.
 const SHARED_IGNORES = [
   ".git",
   "node_modules",
@@ -17,13 +14,8 @@ const SHARED_IGNORES = [
   ".claude",
 ];
 
-// Pure-logic tests, plain Node — *.unit.ts colocated with source.
 const nodeConfig: TestProjectConfiguration = {
-  // The Qwik optimizer normally substitutes __EXPERIMENTAL__.<flag> feature
-  // checks inside @qwik.dev/core; stub them off so core's non-component
-  // exports stay importable here. Component modules still cannot run in
-  // this project — component$()/$ require the optimizer, so anything that
-  // renders belongs in the dom project below.
+  // Stub __EXPERIMENTAL__ so core's non-component exports import without the optimizer; components still need the dom project.
   define: {
     __EXPERIMENTAL__: "{}",
   },
@@ -32,20 +24,13 @@ const nodeConfig: TestProjectConfiguration = {
     environment: "node",
     include: ["**/*.unit.ts"],
     exclude: ["**/node_modules/**"],
-    // Vitest stubs out CSS imports by default; the library's ?inline
-    // imports are real code (useStyles$), so process them for real.
+    // Vitest stubs CSS imports by default; ?inline imports are real code (useStyles$), so process for real.
     css: true,
   },
 };
 
-// Component tests in a real browser (Vitest Browser Mode, chromium) —
-// *.browser.tsx colocated with source. vitest-browser-qwik renders both
-// client-side (render) and server-side (renderSSR, resumability tests).
 const domConfig: TestProjectConfiguration = {
-  // Order matters: testSSR rewrites renderSSR() calls into a server-side
-  // browser command and must run before the Qwik optimizer transforms.
-  // Both factories ship loose plugin types (typed against plain vite, not
-  // the vite-plus alias) — safe in practice, exercised by the test suite.
+  // testSSR must run before qwikVite: it rewrites renderSSR() calls, which the optimizer then transforms.
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   plugins: [testSSR() as PluginOption, qwikVite({ srcDir: "/" }) as PluginOption],
   test: {
@@ -67,10 +52,8 @@ export default defineConfig({
   pack: [qwikLibPack("packages/lib")],
   lint: {
     ignorePatterns: SHARED_IGNORES,
-    // Qwik-specific rules (port of eslint-plugin-qwik). Rules must be enabled
-    // explicitly — loading the plugin alone activates nothing.
-    // Known gap: valid-lexical-scope is type-aware and has no oxlint port yet
-    // (qwiksilverlabs/oxlint-plugin-qwik#2).
+    // Rules must be enabled explicitly; loading the plugin alone activates nothing.
+    // valid-lexical-scope has no oxlint port yet (qwiksilverlabs/oxlint-plugin-qwik#2).
     jsPlugins: ["oxlint-plugin-qwik"],
     options: {
       typeAware: true,

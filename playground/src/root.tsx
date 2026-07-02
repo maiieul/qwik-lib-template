@@ -7,10 +7,6 @@ export default component$(() => {
   useQwikRouter();
   const { url } = useLocation();
 
-  /**
-   * This is the root of a QwikRouter site. It contains the document's `<head>` and `<body>`. You can adjust them as you see fit.
-   */
-
   return (
     <>
       <head>

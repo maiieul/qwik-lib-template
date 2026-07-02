@@ -9,9 +9,7 @@ const isExternal = (id: string) => {
   return list.some((pattern) => (pattern instanceof RegExp ? pattern.test(id) : pattern === id));
 };
 
-// The externalization contract: everything the consumer installs themselves
-// (dependencies, peerDependencies, node builtins) must never be bundled —
-// bundling a duplicate @qwik.dev/core is the classic broken-Qwik-lib bug.
+// Externalization contract: consumer-installed deps/peerDeps/builtins must never be bundled.
 test("externalizes peerDependencies including subpath imports", () => {
   expect(isExternal("@qwik.dev/core")).toBe(true);
   expect(isExternal("@qwik.dev/core/optimizer")).toBe(true);

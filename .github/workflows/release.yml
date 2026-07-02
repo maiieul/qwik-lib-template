@@ -1,20 +1,6 @@
 name: Release
 
-# Bumpy release lifecycle (split jobs so credentials stay scoped):
-# - plan: read-only, decides whether to update the Version Packages PR or
-#   publish (the Version Packages PR was just merged).
-# - version-pr: opens/updates the Version Packages PR.
-# - publish: builds, then publishes to npm via OIDC trusted publishing
-#   (no NPM_TOKEN) with provenance, creates git tags + GitHub releases.
-#
-# Setup (one-time, documented in the README):
-# - configure the npm trusted publisher for each package on npmjs.com,
-#   bound to this repo, this workflow, and the `publish` environment
-#   (first-ever publish of a new package still needs a token or a manual
-#   `pnpm publish` — npm requires the package to exist first)
-# - optional BUMPY_GH_TOKEN secret (fine-grained PAT or App token): without
-#   it, CI workflows do not run on the Version Packages PR (GitHub's
-#   anti-recursion rule for github.token-created PRs)
+# Jobs split so credentials stay scoped: plan (read-only) -> version-pr / publish.
 on:
   push:
     branches: [main]

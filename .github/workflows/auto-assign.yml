@@ -1,15 +1,5 @@
 name: Auto-assign core-team PRs
 
-# When a core-team member opens a PR: assign them to it, add it to the org
-# project board, and set its status from draft/ready state. Ported from
-# QwikDev/qwik.
-#
-# Setup (per instance):
-# - adjust the three env values below
-# - add an `AUTO_ASSIGN_PAT` secret: classic PAT with read:org (team
-#   membership) + repo (assignees) + project (org project write), or a
-#   fine-grained equivalent
-# - the two project-status steps are droppable if you don't use a board
 on:
   pull_request_target:
     types: [opened, reopened, ready_for_review, converted_to_draft]
@@ -26,9 +16,7 @@ env:
 jobs:
   auto_assign:
     runs-on: ubuntu-latest
-    # SECURITY: pull_request_target runs with repository secrets. This job
-    # must NEVER check out or execute PR code — REST calls and trusted
-    # marketplace actions only.
+    # SECURITY: pull_request_target job must never run PR code.
     steps:
       - name: Check team membership
         id: team

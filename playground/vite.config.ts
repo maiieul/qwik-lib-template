@@ -3,13 +3,7 @@ import { qwikVite } from "@qwik.dev/core/optimizer";
 import { qwikRouter } from "@qwik.dev/router/vite";
 import { defineConfig } from "vite";
 
-/**
- * Playground app for developing the library (`pnpm dev` at the root).
- *
- * The library is aliased to its src/ so edits HMR straight into the
- * playground without rebuilding `lib/` — the built output only matters
- * for publishing (and for the pack-smoke tests, which do NOT alias).
- */
+// Alias to lib src/: playground consumes the lib from source, no rebuild.
 export default defineConfig(() => {
   return {
     resolve: {
