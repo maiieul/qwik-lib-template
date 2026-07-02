@@ -11,20 +11,20 @@ configuration from a single source of truth:
 └── skills/         # Task workflows (template sync, ...)
 ```
 
-Everything Ruler generates (root `AGENTS.md`, `CLAUDE.md`, `.claude/`, `.codex/`, `.cursor/`,
-`.github/copilot-instructions.md`) is **gitignored** — `.ruler/` is the only editable source.
+Everything Ruler generates (root `AGENTS.md`, `CLAUDE.md`, `.claude/skills/`, `.codex/skills/`)
+is **committed**, so fresh clones and git worktrees have agent guidance immediately — no setup
+step. `.ruler/` is still the only editable source. `AGENTS.md` is read natively by Cursor,
+Copilot, Gemini and most other tools, so only the Claude and Codex outputs are generated.
 
-## Generate configs for your agent
+## After editing `.ruler/`
 
-No global install needed:
+Regenerate the committed outputs and commit them together with your source change:
 
 ```bash
-pnpm dlx @intellectronica/ruler apply              # all default agents
-pnpm dlx @intellectronica/ruler apply --agents claude
-pnpm dlx @intellectronica/ruler apply --agents cursor,copilot
+pnpm dlx @intellectronica/ruler apply --no-gitignore --no-mcp
 ```
 
-Re-run after pulling changes that touch `.ruler/`.
+CI (`ruler-check.yml`) fails when the committed outputs drift from `.ruler/`.
 
 ## Project vs personal config
 

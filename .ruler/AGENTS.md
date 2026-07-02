@@ -17,13 +17,13 @@ tests, bumpy for releases, pkg.pr.new for PR previews.
 
 ## Monorepo Map
 
-| Path           | Notes                                                                  |
-| -------------- | ---------------------------------------------------------------------- |
-| `packages/lib` | The publishable library (rename per instance). ESM-only, `.qwik.mjs`.  |
-| `playground`   | Real Qwik app consuming the lib from source (dev harness, private).    |
-| `tools`        | Build helpers: `qwikLibPack()` (vp pack preset for Qwik libs).         |
-| `.ruler`       | This guidance (source of truth; generated agent files are gitignored). |
-| `.bumpy`       | Release intents (bump files) + bumpy config.                           |
+| Path           | Notes                                                                 |
+| -------------- | --------------------------------------------------------------------- |
+| `packages/lib` | The publishable library (rename per instance). ESM-only, `.qwik.mjs`. |
+| `playground`   | Real Qwik app consuming the lib from source (dev harness, private).   |
+| `tools`        | Build helpers: `qwikLibPack()` (vp pack preset for Qwik libs).        |
+| `.ruler`       | This guidance (source of truth; generated agent files are committed). |
+| `.bumpy`       | Release intents (bump files) + bumpy config.                          |
 
 ## Environment
 
@@ -97,5 +97,8 @@ Naming conventions:
 ## Boundaries
 
 - Preserve user work and unrelated changes. Do not reset or revert unrelated files.
-- Do not commit `.only` tests, generated agent outputs, or build artifacts.
+- Do not commit `.only` tests or build artifacts.
+- After editing `.ruler/**`, regenerate the committed outputs with
+  `pnpm dlx @intellectronica/ruler apply --no-gitignore --no-mcp` and commit them together
+  (`ruler-check.yml` fails CI on drift). Never hand-edit the outputs.
 - Do not skip tests for behavior changes; use the closest focused test first.

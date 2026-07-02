@@ -1,0 +1,29 @@
+# Committed agent files (AGENTS.md, CLAUDE.md, skills) must match .ruler/.
+name: Ruler guidance in sync
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ruler-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+
+      - name: Verify committed agent files match .ruler/
+        run: |
+          pnpm dlx @intellectronica/ruler@0.3.42 apply --no-gitignore --no-mcp
+          DRIFT="$(git status --porcelain -- AGENTS.md CLAUDE.md .claude/skills .codex/skills)"
+          if [ -n "$DRIFT" ]; then
+            echo "::error::Agent files out of sync with .ruler/. Run 'pnpm dlx @intellectronica/ruler apply --no-gitignore --no-mcp' and commit."
+            echo "$DRIFT"
+            git --no-pager diff -- AGENTS.md CLAUDE.md .claude/skills .codex/skills
+            exit 1
+          fi
+          echo "Agent files are in sync with .ruler/."

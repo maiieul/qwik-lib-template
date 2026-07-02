@@ -1,7 +1,7 @@
 # Guidance Source Of Truth Rule
 
-Keep shared AI guidance in the committed `.ruler` source tree. Generated assistant files are local
-outputs, not source.
+Keep shared AI guidance in the committed `.ruler` source tree. Generated assistant files are
+committed outputs, not source — edit `.ruler/`, then regenerate.
 
 ## Source Layout
 
@@ -15,11 +15,12 @@ outputs, not source.
 
 ## Generated Assistant Outputs
 
-- Do not hand-edit or commit generated assistant outputs such as root `AGENTS.md`, root
-  `CLAUDE.md`, `.codex/`, `.claude/`, `.cursor/`, or generated skill directories.
-- To change assistant behavior, edit `.ruler/AGENTS.md`, `.ruler/README.md`, `.ruler/rules/**`,
-  or `.ruler/skills/**`.
-- Regenerate local assistant outputs with Ruler only when needed for verification or local use.
+- Generated outputs (root `AGENTS.md`, root `CLAUDE.md`, `.claude/skills/`, `.codex/skills/`)
+  are COMMITTED so fresh clones and git worktrees have guidance immediately.
+- Never hand-edit them. To change assistant behavior, edit `.ruler/AGENTS.md`,
+  `.ruler/rules/**`, or `.ruler/skills/**`, then regenerate with
+  `pnpm dlx @intellectronica/ruler apply --no-gitignore --no-mcp` and commit source + outputs
+  together. `ruler-check.yml` fails CI when they drift.
 
 ## Rule Versus Skill
 

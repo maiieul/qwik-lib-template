@@ -11,7 +11,11 @@ const SHARED_IGNORES = [
   "dist",
   ".vite-hooks",
   ".planning",
+  // Ruler-generated outputs; fmt must not fight the generator.
+  "AGENTS.md",
+  "CLAUDE.md",
   ".claude",
+  ".codex",
 ];
 
 const nodeConfig: TestProjectConfiguration = {

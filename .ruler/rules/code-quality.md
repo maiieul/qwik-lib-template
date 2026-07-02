@@ -29,6 +29,14 @@ Write code that junior developers and AI agents can understand during review and
 - Keep helpers close to their first use unless they are shared across files.
 - Prefer local semantic helpers over broad abstractions.
 
+## Comments
+
+- Comments are sparse: most code needs none.
+- A comment earns its place only by stating a non-obvious constraint, invariant, or safety
+  property the code cannot express.
+- Keep comments to one line, roughly ten words.
+- Never narrate what the code does, restate history, or justify changes to a reviewer.
+
 ## Review Standard
 
 Before finishing, read the changed code as if you are new to the package:

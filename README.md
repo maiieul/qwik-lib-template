@@ -86,12 +86,16 @@ The [CHANGELOG](CHANGELOG.md) carries per-release sync notes written for agents.
 
 ## AI agents
 
-Agent guidance lives in [`.ruler/`](.ruler/README.md) (the generated `CLAUDE.md`/`AGENTS.md`
-files are gitignored). After cloning, generate the config for your tool:
+Agent guidance lives in [`.ruler/`](.ruler/README.md); the generated `CLAUDE.md`, `AGENTS.md`
+and skill copies are **committed**, so clones and git worktrees work with zero setup (`AGENTS.md`
+is read natively by Cursor, Copilot, Gemini, and most other tools). After editing `.ruler/`,
+regenerate and commit the outputs:
 
 ```bash
-pnpm dlx @intellectronica/ruler apply --agents claude   # or cursor, copilot, codex, ...
+pnpm dlx @intellectronica/ruler apply --no-gitignore --no-mcp
 ```
+
+CI fails if the committed outputs drift from `.ruler/`.
 
 ## Known caveats
 
