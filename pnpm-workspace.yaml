@@ -1,0 +1,29 @@
+packages:
+  - packages/*
+  - playground
+
+# These overrides and the root vite-plus devDependency move together, same version.
+# Root `vitest: "*"` must stay declared so pnpm links peer types.
+overrides:
+  vite: npm:@voidzero-dev/vite-plus-core@0.1.24
+  vitest: npm:@voidzero-dev/vite-plus-test@0.1.24
+
+# Single source of truth for shared dependency versions.
+catalog:
+  "@qwik.dev/core": 2.0.0-beta.37
+  "@qwik.dev/router": 2.0.0-beta.37
+  "@types/node": 24.10.0
+  rolldown: 1.1.0
+  typescript: 5.9.3
+  vitest-browser-qwik: 0.3.8
+
+# Silences a peer warning the vitest override can never satisfy.
+peerDependencyRules:
+  allowedVersions:
+    "vitest-browser-qwik>vitest": "*"
+
+# minimumReleaseAge is a supply-chain cooldown before new versions install.
+onlyBuiltDependencies: []
+minimumReleaseAge: 4320 # minutes (3 days)
+minimumReleaseAgeExclude:
+  - "@qwik.dev/*"

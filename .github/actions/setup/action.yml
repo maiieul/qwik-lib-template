@@ -1,0 +1,16 @@
+name: Setup
+description: pnpm + Node + frozen install (run actions/checkout first)
+
+# pnpm/action-setup reads packageManager from package.json, no version input.
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v6
+
+    - uses: actions/setup-node@v6
+      with:
+        node-version: 24
+        cache: pnpm
+
+    - run: pnpm install --frozen-lockfile
+      shell: bash

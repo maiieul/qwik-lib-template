@@ -1,0 +1,39 @@
+{
+  "name": "my-qwik-library-name",
+  "version": "0.0.1",
+  "description": "A Qwik component library built from qwik-lib-template",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/QwikDev/qwik-lib-template.git"
+  },
+  "files": [
+    "lib"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./lib/index.qwik.mjs",
+  "types": "./lib/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.mts",
+      "import": "./lib/index.qwik.mjs"
+    }
+  },
+  "scripts": {
+    "build": "pnpm -w exec vp pack -F my-qwik-library-name",
+    "check": "vp check ."
+  },
+  "devDependencies": {
+    "@qwik.dev/core": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "@qwik.dev/core": ">=2.0.0-beta.36"
+  },
+  "engines": {
+    "node": ">=22.12"
+  },
+  "qwik": "./lib/index.qwik.mjs"
+}

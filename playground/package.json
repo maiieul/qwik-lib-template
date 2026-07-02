@@ -1,0 +1,19 @@
+{
+  "name": "playground",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Dev playground for the library — never published",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --mode ssr",
+    "check": "vp check ."
+  },
+  "devDependencies": {
+    "@qwik.dev/core": "catalog:",
+    "@qwik.dev/router": "catalog:",
+    "@types/node": "catalog:",
+    "my-qwik-library-name": "workspace:*",
+    "typescript": "catalog:",
+    "vite": "^8"
+  }
+}

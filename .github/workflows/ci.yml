@@ -1,0 +1,73 @@
+name: CI
+
+permissions:
+  contents: read
+
+# Avoids double-running every PR commit (push + pull_request together).
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # vp check includes typecheck, so no separate tsc job exists.
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+      - run: pnpm check
+      - run: pnpm exec sherif
+
+  test-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+      - run: pnpm test.unit
+
+  test-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+
+      - name: Get Playwright version
+        id: playwright-version
+        run: echo "version=$(pnpm list playwright --depth=0 --json | jq -r '.[0].devDependencies.playwright.version')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright chromium
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}-chromium
+
+      - name: Install Playwright chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install chromium --with-deps
+
+      - run: pnpm test.browser
+      # Shard here if the suite gets slow: matrix shard: [1,2,3,4], --shard=${{ matrix.shard }}/4
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+      - run: pnpm build
+      - run: pnpm exec publint packages/lib
+      - run: pnpm exec attw --pack packages/lib --profile esm-only
+
+  # Optional Windows lane: keep `check` ubuntu-only, oxlint JS plugins OOM on Windows.
+  # build-windows:
+  #   runs-on: windows-latest
+  #   steps:
+  #     - uses: actions/checkout@v6
+  #     - uses: ./.github/actions/setup
+  #     - run: pnpm build
+  #     - run: pnpm test.unit

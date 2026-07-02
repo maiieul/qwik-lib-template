@@ -1,0 +1,76 @@
+name: Auto-assign core-team PRs
+
+on:
+  pull_request_target:
+    types: [opened, reopened, ready_for_review, converted_to_draft]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+env:
+  ORG: QwikDev
+  TEAM_SLUG: qwik-team
+  PROJECT_URL: https://github.com/orgs/QwikDev/projects/1
+
+jobs:
+  auto_assign:
+    runs-on: ubuntu-latest
+    # SECURITY: pull_request_target job must never run PR code.
+    steps:
+      - name: Check team membership
+        id: team
+        env:
+          GH_TOKEN: ${{ secrets.AUTO_ASSIGN_PAT }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          STATE=$(curl -s \
+            -H "Authorization: token ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/orgs/${ORG}/teams/${TEAM_SLUG}/memberships/${AUTHOR}" \
+            | jq -r '.state // empty')
+          if [ "$STATE" = "active" ]; then
+            echo "isCore=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "isCore=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Assign PR to author
+        if: steps.team.outputs.isCore == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.AUTO_ASSIGN_PAT }}
+        run: |
+          curl -s \
+            -H "Authorization: token ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -X POST \
+            -d "{\"assignees\":[\"${{ github.event.pull_request.user.login }}\"]}" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/assignees"
+
+      - name: Add PR to project board
+        id: add-project
+        if: steps.team.outputs.isCore == 'true'
+        uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: ${{ env.PROJECT_URL }}
+          github-token: ${{ secrets.AUTO_ASSIGN_PAT }}
+
+      - name: Set project status (draft → In progress)
+        if: steps.team.outputs.isCore == 'true' && github.event.pull_request.draft == true
+        uses: titoportas/update-project-fields@421a54430b3cdc9eefd8f14f9ce0142ab7678751 # v0.1.0
+        with:
+          project-url: ${{ env.PROJECT_URL }}
+          github-token: ${{ secrets.AUTO_ASSIGN_PAT }}
+          item-id: ${{ steps.add-project.outputs.itemId }}
+          field-keys: Status
+          field-values: In progress
+
+      - name: Set project status (ready → Waiting For Review)
+        if: steps.team.outputs.isCore == 'true' && github.event.pull_request.draft == false
+        uses: titoportas/update-project-fields@421a54430b3cdc9eefd8f14f9ce0142ab7678751 # v0.1.0
+        with:
+          project-url: ${{ env.PROJECT_URL }}
+          github-token: ${{ secrets.AUTO_ASSIGN_PAT }}
+          item-id: ${{ steps.add-project.outputs.itemId }}
+          field-keys: Status
+          field-values: Waiting For Review

@@ -1,20 +1,11 @@
 import { component$ } from "@qwik.dev/core";
-import {
-  DocumentHeadTags,
-  RouterOutlet,
-  useLocation,
-  useQwikRouter,
-} from "@qwik.dev/router";
+import { DocumentHeadTags, RouterOutlet, useLocation, useQwikRouter } from "@qwik.dev/router";
 
 import "./global.css";
 
 export default component$(() => {
   useQwikRouter();
   const { url } = useLocation();
-
-  /**
-   * This is the root of a QwikRouter site. It contains the document's `<head>` and `<body>`. You can adjust them as you see fit.
-   */
 
   return (
     <>

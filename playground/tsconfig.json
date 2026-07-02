@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["vite/client"],
+    "paths": {
+      "my-qwik-library-name": ["../packages/lib/src"]
+    }
+  },
+  "include": ["src", "vite.config.ts"]
+}

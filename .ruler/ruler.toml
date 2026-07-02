@@ -1,0 +1,24 @@
+# Ruler configuration — https://github.com/intellectronica/ruler
+# .ruler/ is the source of truth; never hand-edit generated outputs.
+
+# AGENTS.md (codex output) is read natively by Cursor, Copilot, Gemini, ...
+# so only the two distinct outputs are generated: CLAUDE.md and AGENTS.md.
+default_agents = ["claude", "codex"]
+
+nested = false
+
+[agents.claude]
+enabled = true
+output_path = "CLAUDE.md"
+
+[agents.codex]
+enabled = true
+output_path = "AGENTS.md"
+
+[skills]
+enabled = true
+
+# Outputs are committed so fresh clones/worktrees have guidance immediately.
+# ruler-check.yml re-runs `ruler apply` in CI and fails on drift.
+[gitignore]
+enabled = false

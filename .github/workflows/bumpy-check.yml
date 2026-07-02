@@ -1,0 +1,31 @@
+name: Bumpy check
+
+# SECURITY: pull_request_target job must never run PR code.
+on:
+  pull_request_target:
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: pnpm/action-setup@v6
+
+      # bumpy version resolved from base branch, not PR.
+      - name: Resolve bumpy version from base branch
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
+          VERSION=$(git show "origin/${{ github.event.pull_request.base.ref }}:package.json" \
+            | jq -r '.devDependencies["@varlock/bumpy"]' | sed 's/[\^~]//')
+          echo "BUMPY_VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - run: pnpm dlx "@varlock/bumpy@$BUMPY_VERSION" ci check
+        env:
+          GH_TOKEN: ${{ github.token }}
