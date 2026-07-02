@@ -1,9 +1,7 @@
 # Template changelog
 
-Release notes for the template itself, written for the agents (and humans) that sync downstream
-repos. Each entry lists what changed and — when a pattern changed shape — explicit **Sync
-notes** describing how to apply it to an existing repo. Package versions/changelogs are managed
-by bumpy; this file tracks the _template patterns_.
+Sync notes for agents applying template updates downstream. Package versions/changelogs are
+managed by bumpy; this file tracks the _template patterns_.
 
 ## Unreleased
 

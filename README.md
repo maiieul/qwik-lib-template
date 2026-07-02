@@ -1,9 +1,8 @@
 # Qwik Library Template ⚡️
 
-An opinionated starter for building **Qwik v2 libraries**, maintained by the Qwik core team as a
-living reference. It is written to be read by humans _and_ AI agents: repos based on it stay
-aligned with the template through agent-driven syncs (see [Template sync](#template-sync)), not
-through an npm dependency.
+Opinionated starter for **Qwik v2 libraries**, maintained by the Qwik core team as a living
+reference. Repos based on it stay aligned through agent-driven syncs (see
+[Template sync](#template-sync)), not an npm dependency.
 
 ## Stack
 
@@ -15,7 +14,7 @@ through an npm dependency.
 | Tests         | Vitest projects: `node` (`*.unit.ts`) + `dom` (`*.browser.tsx`, Browser Mode, [vitest-browser-qwik](https://github.com/kunai-consulting/vitest-browser-qwik), axe-core) |
 | Releases      | [bumpy](https://github.com/dmno-dev/bumpy) bump files → Version PR → npm OIDC trusted publishing with provenance                                                        |
 | Previews      | [pkg.pr.new](https://pkg.pr.new) on every PR                                                                                                                            |
-| Agent config  | [.ruler/](.ruler/README.md) source of truth (rules + skills), generated per-agent files gitignored                                                                      |
+| Agent config  | [.ruler/](.ruler/README.md) source of truth (instructions + skills), generated per-agent files committed                                                                |
 
 ## Repo tour
 
@@ -33,19 +32,18 @@ through an npm dependency.
 
 1. **Create your repo** from this template (GitHub "Use this template", or
    `gh repo create my-lib --template QwikDev/qwik-lib-template`).
-2. **Rename the placeholders** (an agent prompted with "adopt this template for <name>" will do
-   all of this for you):
+2. **Rename the placeholders** (or prompt an agent: "adopt this template for <name>"):
    - `packages/lib/package.json`: `name`, `description`, `repository.url`
    - root `package.json`: `name`, `description`
    - `.github/workflows/auto-assign.yml`: the `ORG`/`TEAM_SLUG`/`PROJECT_URL` env values (or
      delete the workflow)
    - this README: rewrite it for your library, but **keep the baseline line below**
-3. **Record your baseline** — keep this line (with the ref you started from) somewhere in your
-   README so agents can sync you later:
+3. **Record your baseline** — keep this line (with the ref you started from) in your README so
+   agents can sync you later:
 
    > Based on [QwikDev/qwik-lib-template](https://github.com/QwikDev/qwik-lib-template) @ `<ref>`
 
-4. **Wire up the services** (each is optional, everything else works without them):
+4. **Wire up the services** (each optional; everything else works without them):
    - install the [pkg.pr.new GitHub App](https://github.com/apps/pkg-pr-new) → PR preview packages
    - add an `AUTO_ASSIGN_PAT` secret (`read:org` + `repo` + `project`) → PR auto-assignment
    - publish each package once manually (`pnpm build && pnpm --filter <pkg> publish --access public`),
@@ -70,17 +68,16 @@ pnpm exec bumpy add                     # declare a release intent (bump file)
 
 ## Template sync
 
-There is deliberately **no sync tooling** — the agent is the sync mechanism, and
-[`.ruler/skills/qwik-lib-template-sync`](.ruler/skills/qwik-lib-template-sync/SKILL.md) is its
-playbook:
+No sync tooling — the agent is the sync mechanism, following
+[`.ruler/skills/qwik-lib-template-sync`](.ruler/skills/qwik-lib-template-sync/SKILL.md):
 
 - **Template → your repo**: "sync this repo with qwik-lib-template" — the agent diffs the
   pattern-carrier files (toolchain config, CI, build recipe, agent rules) from your recorded
-  baseline to the template's HEAD, merges them with judgment, verifies with the full check/test
-  suite, and opens a PR.
-- **Your repo → template**: improved a pattern that every Qwik library would want? Ask the agent
-  to "upstream this to qwik-lib-template" — it generalizes the change, proves it against the
-  template's own checks, and opens a PR here.
+  baseline to the template's HEAD, merges with judgment, verifies with the full check/test suite,
+  opens a PR.
+- **Your repo → template**: improved a pattern every Qwik library would want? Ask the agent to
+  "upstream this to qwik-lib-template" — it generalizes the change, proves it against the
+  template's own checks, opens a PR here.
 
 The [CHANGELOG](CHANGELOG.md) carries per-release sync notes written for agents.
 
@@ -100,14 +97,13 @@ CI fails if the committed outputs drift from `.ruler/`.
 ## Known caveats
 
 - **Vite Plus is alpha (0.1.x)** — the `vite-plus` devDependency and the two pnpm-workspace
-  overrides are exact-pinned and must move together. Renovate is configured to leave them alone;
-  bump them deliberately. The escape hatch is plain vite + vitest + oxlint, and every touchpoint
-  is confined to package.json scripts + the root `vite.config.ts`.
+  overrides are exact-pinned and must move together; bump deliberately (Renovate leaves them
+  alone). Escape hatch: plain vite + vitest + oxlint — every touchpoint is confined to
+  package.json scripts + the root `vite.config.ts`.
 - **`valid-lexical-scope` has no oxlint port yet** ([discussion](https://github.com/qwiksilverlabs/oxlint-plugin-qwik/discussions/2)) —
   nothing machine-checks captures across `$` boundaries; review for serializability manually.
 - **Windows**: works, with two notes — tsgolint's binary is unsigned (Windows Security may block
-  the first `pnpm check`), and custom oxlint JS plugins can OOM on Windows until oxc's allocator
-  work lands (use WSL if you hit it).
-- **Duplicate Qwik instances**: if typechecking suddenly fails around `jsx-runtime` after
-  dependency changes, run `pnpm dedupe` — peer-resolution can split `@qwik.dev/core` into
-  multiple instances.
+  the first `pnpm check`), and custom oxlint JS plugins can OOM until oxc's allocator work lands
+  (use WSL if you hit it).
+- **Duplicate Qwik instances**: if typechecking fails around `jsx-runtime` after dependency
+  changes, run `pnpm dedupe` — peer-resolution can split `@qwik.dev/core` into multiple instances.

@@ -2,94 +2,98 @@
 
 <!-- Source: .ruler/AGENTS.md -->
 
-# Qwik Library Template — AI Agent Rules
+# Qwik Library Template — agent instructions
 
-> Canonical source for repo-wide AI coding agent rules. For contributor setup, see
-> `.ruler/README.md`. For the template-sync workflow, load
+> `.ruler/` is the canonical source for these rules. For template sync work, load
 > `.ruler/skills/qwik-lib-template-sync/SKILL.md`.
+
+## Source Of Truth
+
+- Shared AI guidance lives in `.ruler/`. Generated outputs (root `AGENTS.md`, `CLAUDE.md`,
+  `.claude/skills/`, `.codex/skills/`) are committed — never hand-edit them.
+- After editing `.ruler/**`, regenerate and commit outputs together
+  (`pnpm dlx @intellectronica/ruler apply --no-gitignore --no-mcp`). CI fails on drift.
+- Other generated files: `packages/*/lib/`, `.vite-hooks/`, `pnpm-lock.yaml`, bumpy changelogs.
+  Edit the owning source, regenerate with the owning tool.
+- If guidance you used is stale, fix the `.ruler` source before finishing. Fixes generic to all
+  Qwik libraries belong upstream in the template.
 
 ## Project Snapshot
 
-This repo is the Qwik core team's **library starter template** — a living reference, not a
-framework. Other Qwik library repos copy its patterns; agents keep them aligned in both
-directions (see Template Sync below). Everything here is meant to be read and reapplied by
-agents, so prefer boring, explicit, well-commented configuration over cleverness.
-
-The stack: pnpm workspaces, Vite Plus (`vp`) as the single toolchain (build/lint/format/test/
-hooks via one root `vite.config.ts`), Qwik v2 (`@qwik.dev/*`), Vitest Browser Mode for component
-tests, bumpy for releases, pkg.pr.new for PR previews.
+The Qwik core team's starter template for Qwik v2 libraries — a living reference. Other repos
+copy its patterns and agents sync them in both directions. Prefer boring, explicit,
+well-commented-only-where-crucial config over cleverness.
 
 ## Monorepo Map
 
-| Path           | Notes                                                                 |
-| -------------- | --------------------------------------------------------------------- |
-| `packages/lib` | The publishable library (rename per instance). ESM-only, `.qwik.mjs`. |
-| `playground`   | Real Qwik app consuming the lib from source (dev harness, private).   |
-| `tools`        | Build helpers: `qwikLibPack()` (vp pack preset for Qwik libs).        |
-| `.ruler`       | This guidance (source of truth; generated agent files are committed). |
-| `.bumpy`       | Release intents (bump files) + bumpy config.                          |
+| Path           | Notes                                                        |
+| -------------- | ------------------------------------------------------------ |
+| `packages/lib` | The publishable library (rename per instance). ESM-only.     |
+| `playground`   | Real Qwik app consuming the lib from source (private).       |
+| `tools`        | `qwikLibPack()` — the vp pack preset for Qwik libraries.     |
+| `.ruler`       | This guidance. Generated agent files are committed.          |
+| `.bumpy`       | Release intents (bump files) + bumpy config.                 |
 
-## Environment
+## Commands
 
-- Node `>=22.12`, pnpm only (version pinned via `packageManager`).
-- Install with `pnpm install`. Never use npm/yarn commands in this repo.
+```bash
+pnpm i                                  # install (also sets up git hooks)
+pnpm check                              # fmt + lint + typecheck; run before finishing any task
+pnpm fix                                # autofix the above
+pnpm test.unit                          # node project (*.unit.ts)
+pnpm test.browser                       # dom project (*.browser.tsx); needs one-time:
+pnpm exec playwright install chromium
+pnpm build                              # vp pack → packages/lib/lib/
+pnpm exec publint packages/lib          # validate built package
+pnpm exec attw --pack packages/lib --profile esm-only
+pnpm dev                                # playground against lib source
+```
 
-## Command Rules
-
-- `pnpm check` — format + lint (type-aware, includes full TS typecheck) for the whole repo.
-  Run before finishing any task. `pnpm fix` applies autofixes.
-- `pnpm test.unit` / `pnpm test.browser` — the two vitest projects (node logic / real-browser
-  component tests). `pnpm test` runs both. Browser tests need
-  `pnpm exec playwright install chromium` once.
-- `pnpm build` — builds the publishable packages (vp pack). Validate output with
-  `pnpm exec publint packages/lib` and `pnpm exec attw --pack packages/lib --profile esm-only`.
-- `pnpm dev` — playground against lib source (no rebuild loop).
-- If a release-worthy package change ships, create a bump file with `pnpm exec bumpy add`
-  unless the user says it is non-release-affecting.
-
-## Qwik Library Rules (load-bearing, do not "simplify" away)
+## Qwik Library Rules (load-bearing)
 
 - Every published JS file keeps the `.qwik.mjs` suffix (entries AND chunks) — the consumer's
   optimizer only re-processes files matching `/\.qwik\.[mc]?js$/`.
-- `package.json` keeps the `"qwik"` field, `"sideEffects": false`, ESM-only exports, and a
-  floor peerDependency on `@qwik.dev/core`.
-- Component CSS is `import styles from './x.css?inline'` + `useStyles$(styles)` — never plain
-  CSS imports in library source (would make `sideEffects: false` a lie).
-- `preserveModules` stays on: one output module per source module is what keeps per-component
-  lazy loading and tree-shaking for consumers.
-- The `vite-plus` devDependency and the two pnpm-workspace overrides (`vite`, `vitest`) are the
-  SAME exact version and move together, deliberately — never via routine dependency bumps.
-- Shared dependency versions live in the pnpm catalog (`pnpm-workspace.yaml`), defined once.
+- `package.json` keeps the `"qwik"` field, `"sideEffects": false`, ESM-only exports, and a floor
+  peerDependency on `@qwik.dev/core`.
+- Component CSS: `import styles from './x.css?inline'` + `useStyles$(styles)`. Never plain CSS
+  imports in library source.
+- `preserveModules` stays on — it preserves per-component lazy loading and tree-shaking.
+- The `vite-plus` devDependency and the two pnpm-workspace overrides move together, same exact
+  version, bumped deliberately.
+- Shared dependency versions live in the pnpm catalog, defined once.
 
 ## Template Sync
 
-This repo's patterns flow to and from other Qwik library repos:
+- Downstream repos record `Based on QwikDev/qwik-lib-template @ <ref>` in their README; agents
+  diff from that baseline to apply updates.
+- Stale or improvable generic patterns → PR the template, never push directly.
+- Load the `qwik-lib-template-sync` skill before sync work in either direction.
+- Keep the `qwik-` prefix on skill names — they land in shared agent skill directories.
 
-- Downstream repos record their baseline as `Based on QwikDev/qwik-lib-template @ <ref>` in
-  their README. Agents use it to diff and apply template updates.
-- If you fix or improve something here that is generic to all Qwik library repos, it ships with
-  the next template tag. If you find a stale pattern here while working downstream, propose a PR
-  to the template (never push directly).
-- Load the `qwik-lib-template-sync` skill before any sync work in either direction.
+## Tests
 
-## Source Rules
+- TDD for behavior changes: write the closest focused test first, see it fail, make it pass.
+- `node` project (`*.unit.ts`): pure logic only — `component$` cannot execute there.
+- `dom` project (`*.browser.tsx`): anything that renders — `render`, `renderSSR`, axe-core.
+- Docs/config-only changes skip the failing-test step but still get the narrowest verification.
 
-Dedicated source rules live under `.ruler/rules/` and are part of the always-on guidance:
+## Releases
 
-- `test-driven-development`: focused test first; node project for logic, dom project for
-  anything that renders.
-- `code-quality`: understandable names, early returns, focused helpers.
-- `guidance-source-of-truth`: `.ruler` is canonical; rule-vs-skill taxonomy.
-- `generated-output-boundaries`: edit owning sources, regenerate intentionally.
-- `security-and-supply-chain`: focused security pass for dependency/CI/publish changes.
+Release-worthy package change → `pnpm exec bumpy add`. One bump file per change; summary is one
+short lowercase sentence (~10 words), no implementation details.
+
+## Code Quality
+
+- Keep code DRY; no debug logging or temporary names in the final diff.
+- Comments only for crucial non-obvious information — one sentence, ~10 words, explain the why.
+- Names state the domain idea; booleans as questions (`isReady`); functions as actions.
+- Early returns over nesting; small focused helpers; keep the success path at the outer level.
 
 ## Code Style
 
-oxfmt and oxlint define style (configured in the root `vite.config.ts`); do not fight them.
-Known linting gap: `valid-lexical-scope` has no oxlint port yet — be careful about capturing
-non-serializable values across `$` boundaries; nothing machine-checks it.
-
-Naming conventions:
+oxfmt and oxlint define style (root `vite.config.ts`); do not fight them. Known gap:
+`valid-lexical-scope` has no oxlint port — review `$` boundary captures for serializability
+manually.
 
 | Pattern         | Usage                                   |
 | --------------- | --------------------------------------- |
@@ -98,14 +102,18 @@ Naming conventions:
 | `*.unit.ts`     | Vitest node-project tests               |
 | `*.browser.tsx` | Vitest Browser Mode tests (dom project) |
 
+## Security
+
+- Dependency, CI, or publish changes get a focused security pass: least-privilege `permissions:`,
+  no secrets to forked PRs, SHA-pin third-party actions, check new install scripts and lockfile
+  drift.
+- `pull_request_target` jobs must never check out or execute PR code.
+
 ## Boundaries
 
-- Preserve user work and unrelated changes. Do not reset or revert unrelated files.
+- Preserve user work and unrelated changes; do not reset or revert unrelated files.
 - Do not commit `.only` tests or build artifacts.
-- After editing `.ruler/**`, regenerate the committed outputs with
-  `pnpm dlx @intellectronica/ruler apply --no-gitignore --no-mcp` and commit them together
-  (`ruler-check.yml` fails CI on drift). Never hand-edit the outputs.
-- Do not skip tests for behavior changes; use the closest focused test first.
+- Do not skip tests for behavior changes.
 
 
 
@@ -120,7 +128,6 @@ configuration from a single source of truth:
 .ruler/
 ├── AGENTS.md       # Repo-wide instructions for all AI tools
 ├── ruler.toml      # Which agents to generate config for
-├── rules/          # Always-on source rules (quality, TDD, security, ...)
 └── skills/         # Task workflows (template sync, ...)
 ```
 
@@ -146,261 +153,4 @@ CI (`ruler-check.yml`) fails when the committed outputs drift from `.ruler/`.
 - **`~/.config/ruler/` (personal)**: your own preferences, API keys, personal MCP servers.
   Never commit personal config.
 
-## Changing agent behavior
-
-Edit the `.ruler/` sources (see the `guidance-source-of-truth` rule for the layout), then
-regenerate. Do not hand-edit generated files — they get overwritten.
-
-
-
-<!-- Source: .ruler/rules/code-quality.md -->
-
-# Code Quality Rule
-
-Write code that junior developers and AI agents can understand during review and future changes.
-
-## Naming
-
-- Use names that explain the domain idea, not the implementation trick.
-- Prefer specific names over short names when the value crosses more than a few lines.
-- Name booleans as questions or states, such as `isReady`, `hasSubscribers`, or `shouldFlush`.
-- Name functions by the action they perform, such as `resolveLoaderData()` or
-  `markContainerReady()`.
-- Avoid vague names like `data`, `item`, `temp`, `handle`, `process`, or `doWork` unless the local
-  scope makes the meaning obvious.
-- Keep existing public API names unless the task is intentionally changing the API.
-
-## Control Flow
-
-- Prefer early returns for invalid, empty, unsupported, or already-handled cases.
-- Avoid deep nesting when a guard clause can make the main path easier to read.
-- Keep the success path visible at the outer indentation level when possible.
-- Do not use clever boolean expressions when a named condition or small helper would be clearer.
-- Keep error and compatibility branches explicit so reviewers can see why they exist.
-
-## Modularity
-
-- Keep functions focused on one responsibility.
-- Extract a helper when a block has a clear name, is reused, or hides the main path.
-- Do not extract helpers only to move complexity around; the caller should become easier to read.
-- Keep helpers close to their first use unless they are shared across files.
-- Prefer local semantic helpers over broad abstractions.
-
-## Comments
-
-- Comments are sparse: most code needs none.
-- A comment earns its place only by stating a non-obvious constraint, invariant, or safety
-  property the code cannot express.
-- Keep comments to one line, roughly ten words.
-- Never narrate what the code does, restate history, or justify changes to a reviewer.
-
-## Review Standard
-
-Before finishing, read the changed code as if you are new to the package:
-
-1. Can a junior developer explain what each name represents?
-2. Can an AI agent identify the main path without following deeply nested branches?
-3. Are edge cases handled by clear guard clauses or named helpers?
-4. Is the change modular without hiding important state or protocol boundaries?
-
-If the answer is no, simplify the code before calling the task complete.
-
-
-
-<!-- Source: .ruler/rules/generated-output-boundaries.md -->
-
-# Generated Output Boundaries Rule
-
-Edit source files, not generated artifacts. Generated files are evidence to regenerate or inspect,
-not the place to make durable changes.
-
-## Do Not Hand-Edit
-
-Do not hand-edit generated outputs such as:
-
-- assistant outputs (committed): root `AGENTS.md`, root `CLAUDE.md`, `.claude/skills/`,
-  `.codex/skills/`
-- package build output: `packages/*/lib/`, `dist/`
-- git hooks under `.vite-hooks/` (generated by `vp config --hooks-only`)
-- `pnpm-lock.yaml` (owned by pnpm commands)
-- `CHANGELOG.md` files and version fields written by bumpy releases
-
-Edit the owning source or generator instead.
-
-## Regenerate Intentionally
-
-Run the narrowest generator or updater that owns the changed output:
-
-- Library build output: `pnpm build` (vp pack via `tools/qwik-pack.ts`).
-- Ruler assistant output: `pnpm dlx @intellectronica/ruler apply --no-gitignore --no-mcp` after
-  `.ruler` source changes; commit source and outputs together.
-- Lockfile: the pnpm command that caused the change (`pnpm install`, `pnpm add`, `pnpm dedupe`).
-- Versions/changelogs: bumpy (`bumpy add` for intents; CI applies them on release).
-
-## Review Standard
-
-Before finishing a change that touches or depends on generated output:
-
-1. Identify the source file or generator that owns the output.
-2. Confirm whether the generated file should be regenerated, ignored, or left unchanged.
-3. Run the narrowest relevant generator/check when the environment supports it.
-4. Record any missing dependency, network, toolchain, or generated-artifact blocker.
-5. Do not claim generated output verification from a source-only check unless that check covers
-   the generated artifact.
-
-
-
-<!-- Source: .ruler/rules/guidance-source-of-truth.md -->
-
-# Guidance Source Of Truth Rule
-
-Keep shared AI guidance in the committed `.ruler` source tree. Generated assistant files are
-committed outputs, not source — edit `.ruler/`, then regenerate.
-
-## Source Layout
-
-- Put short repo-wide context in `.ruler/AGENTS.md`.
-- Put dedicated always-on rules in `.ruler/rules/<rule-name>.md`.
-- Put task-specific workflows in `.ruler/skills/<skill-name>/SKILL.md`.
-- Put long, conditional notes in a skill `references/` file only when progressive disclosure helps.
-- Keep the `qwik-` prefix on committed skill names: Ruler copies skills into agent-native skill
-  directories where they coexist with user and plugin skills, so the prefix keeps them
-  unambiguous outside this repo.
-
-## Generated Assistant Outputs
-
-- Generated outputs (root `AGENTS.md`, root `CLAUDE.md`, `.claude/skills/`, `.codex/skills/`)
-  are COMMITTED so fresh clones and git worktrees have guidance immediately.
-- Never hand-edit them. To change assistant behavior, edit `.ruler/AGENTS.md`,
-  `.ruler/rules/**`, or `.ruler/skills/**`, then regenerate with
-  `pnpm dlx @intellectronica/ruler apply --no-gitignore --no-mcp` and commit source + outputs
-  together. `ruler-check.yml` fails CI when they drift.
-
-## Rule Versus Skill
-
-Use `.ruler/rules/*.md` for durable policy that should be available without loading a task skill:
-
-- source-of-truth and generated-output boundaries
-- engineering quality standards
-- test and verification policy
-- security and supply-chain expectations
-
-Use skills for workflow details that only matter for specific tasks:
-
-- the template-sync workflow (both directions)
-- focused commands and examples
-- stop conditions and references that should load only for relevant tasks
-
-## Guidance Freshness
-
-When current source contradicts loaded guidance, update the narrowest `.ruler` source that was
-wrong. Prefer replacing stale text over appending another long note. Do not encode one-off branch
-facts, temporary debugging notes, or speculative design as durable guidance.
-
-This repo is a template other repos sync from: if the stale guidance you fixed is generic to all
-Qwik library repos (not specific to this checkout), it belongs in the template — see the
-`qwik-lib-template-sync` skill for the upstream flow.
-
-
-
-<!-- Source: .ruler/rules/security-and-supply-chain.md -->
-
-# Security And Supply Chain Rule
-
-Treat security-sensitive changes as behavior changes even when they look like config, dependency,
-or CI maintenance.
-
-## Security Review Trigger
-
-Pause for a focused security pass when a change touches:
-
-- authentication, authorization, sessions, cookies, redirects, URL parsing, filesystem paths, SSR,
-  serialization, HTML/script output, request handling, or server adapters
-- dependency versions, lockfiles, package manager settings, release scripts, publishing scripts, or
-  build tooling
-- GitHub Actions, reusable workflows, workflow permissions, tokens, secrets, cache keys, artifact
-  upload/download, or deployment credentials
-
-Use the changed diff as the starting point. Check directly supporting files when needed, but do not
-turn a small change into a repository-wide security scan unless the user asks.
-
-## What To Check
-
-- Identify the trust boundary: attacker-controlled input, untrusted dependency code, untrusted CI
-  event data, secrets, tokens, publish credentials, or generated output.
-- Find the closest existing guard and the sink it protects. Do not claim safety from a broad
-  intuition; point to the concrete validation, escaping, permission, or isolation boundary.
-- Prefer fail-closed behavior for malformed input, unknown modes, unsupported hosts, and missing
-  config.
-- Keep secrets out of logs, snapshots, artifacts, caches, generated files, browser output, and error
-  messages.
-- When changing dependencies or build tools, check for new install scripts, binary downloads,
-  network fetches, transitive tool execution, license or provenance surprises, and lockfile drift.
-
-## GitHub Actions
-
-When editing `.github/workflows/**` or action-related scripts:
-
-- Keep `permissions:` least-privilege at the workflow or job level.
-- Do not introduce `pull_request_target` for code checkout/build/test of untrusted PR content unless
-  the workflow is explicitly designed to avoid running attacker-controlled code with secrets.
-- Avoid passing secrets to forked PRs, third-party actions, shell commands that print env, or
-  generated artifacts.
-- Prefer trusted first-party actions. For new third-party actions, pin to a full commit SHA or
-  document why a moving tag is acceptable.
-- Treat cache restore keys and artifact paths as untrusted input surfaces. Avoid broad paths that can
-  poison future jobs or expose credentials.
-- Quote shell variables and avoid `eval`, curl-piped shells, and unchecked interpolation of GitHub
-  context values into shell commands.
-
-## Verification
-
-For security-sensitive changes, record the focused security reasoning in the final response:
-
-1. What boundary changed?
-2. What guard or invariant prevents abuse?
-3. What focused test, lint, config check, or manual inspection covered it?
-
-If you cannot verify the security property locally, say exactly what remains unverified.
-
-
-
-<!-- Source: .ruler/rules/test-driven-development.md -->
-
-# Test Driven Development Rule
-
-Use test-driven development for behavior changes and bug fixes.
-
-## Required Workflow
-
-1. Identify the observable behavior or invariant before editing implementation code.
-2. Add or update the closest focused test that proves the behavior.
-3. Run that test before the implementation change when feasible and confirm it fails for the
-   expected reason.
-4. Make the smallest implementation change that satisfies the test.
-5. Rerun the focused test and keep iterating until it passes.
-6. Run any broader verification required by the touched surface, such as build output validation
-   (`pnpm build` + publint/attw) or the full check.
-
-## Test Selection
-
-This repo has two vitest projects, both colocated with source:
-
-- `node` (`*.unit.ts`, run with `pnpm test.unit`): pure logic only. Component modules cannot
-  execute here — `component$`/`$` require the Qwik optimizer.
-- `dom` (`*.browser.tsx`, run with `pnpm test.browser`): real-browser component tests via
-  Vitest Browser Mode and `vitest-browser-qwik`. Use `render` for client-side behavior and
-  interactions, `renderSSR` to verify server-rendered output, and axe-core for accessibility
-  assertions.
-
-Anything that renders, handles events, or touches the DOM belongs in the `dom` project. Build
-tooling logic (e.g. `tools/qwik-pack.ts`) gets `node` tests beside it.
-
-## Exceptions
-
-Docs-only, rules-only, formatting-only, dependency metadata, and generated-output maintenance
-changes do not need a failing product test first. They still need the narrowest relevant
-verification, such as formatting, a Ruler dry-run, or a build.
-
-If dependencies or local environment constraints prevent a pre-fix test run, write the focused
-test first, record the blocker, and run the test as soon as the blocker is resolved.
+Never hand-edit generated files — they get overwritten on the next `apply`.

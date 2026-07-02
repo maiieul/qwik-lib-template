@@ -7,7 +7,6 @@ configuration from a single source of truth:
 .ruler/
 ├── AGENTS.md       # Repo-wide instructions for all AI tools
 ├── ruler.toml      # Which agents to generate config for
-├── rules/          # Always-on source rules (quality, TDD, security, ...)
 └── skills/         # Task workflows (template sync, ...)
 ```
 
@@ -33,7 +32,4 @@ CI (`ruler-check.yml`) fails when the committed outputs drift from `.ruler/`.
 - **`~/.config/ruler/` (personal)**: your own preferences, API keys, personal MCP servers.
   Never commit personal config.
 
-## Changing agent behavior
-
-Edit the `.ruler/` sources (see the `guidance-source-of-truth` rule for the layout), then
-regenerate. Do not hand-edit generated files — they get overwritten.
+Never hand-edit generated files — they get overwritten on the next `apply`.
